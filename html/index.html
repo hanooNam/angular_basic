@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html ng-app="gemStore">
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+    .ng-invalid.ng-dirty {
+      border-color:red;
+    }
+
+    .ng-valid.ng-dirty {
+      border-color:green;
+    }
+
+    </style>
+  </head>
+  <body ng-controller='StoreController as store'>
+    <div ng-repeat='product in store.products | orderBy:"-price"'>
+      <div ng-hide="product.soldOut" >
+        <span ng-click='store.up(product)'>can</span> // {{product.name}}
+        <em>{{product.price | currency}}</em>
+        <span ng-show="product.descriptive.length>0">{{product.descriptive}}</span>
+        <button ng-show='product.canPurchase'>purchase</button>
+        <product-gallery></product-gallery>
+        <section class="tab" ng-controller = "TabController as tab">
+          <ul class="nav nav-pills">
+            <li ng-class='{active:tab.isSet(1)}'>
+              <a href ng-click="tab.setTab(1)">Description</a></li>
+            <li ng-class='{active:tab.isSet(2)}'>
+              <a href ng-click="tab.setTab(2)">Specs</a></li>
+            <li ng-class='{active:tab.isSet(3)}'>
+              <a href ng-click="tab.setTab(3)">Reviews</a></li>
+          </ul>
+
+          <div ng-show='tab.isSet(1)'>
+            <product-description></product-description>
+          </div>
+          <div ng-show='tab.isSet(2)'>
+            <h4>Specs</h4>
+            <blockquote>Shine: {{product.shine}}</blockquote>
+          </div>
+          <div ng-show='tab.isSet(3)'>
+
+              <h4>Reviews</h4>
+
+                <blockquote style='margin-left:10px;' ng-repeat="review in product.reviews | orderBy:'-review.stars'">
+                  <strong>{{review.stars}} Stars</strong>
+                  {{review.body}}
+                  <cite class="clearfix">-{{review.author}}</cite>// {{review.createdOn|date}}
+                </blockquote>
+
+            </ul>
+
+            <!--  Review Form -->
+            <form  style='margin-left:10px;' name="reviewForm" ng-controller="ReviewController as reviewCtrl" ng-submit='reviewForm.$valid ? reviewCtrl.add(product) : console.log("put all value!")' novalidate>
+              <!--  Live Preview -->
+              <blockquote ng-show="reviewCrel.reveiw.stars">
+                <strong>{{reviewCtrl.review.stars}} Stars</strong>
+                {{reviewCtrl.review.body}} -- {{reviewCtrl.review.createdOn}}
+                <cite class="clearfix">-{{reviewCtrl.review.author}}</cite>
+              </blockquote>
+
+
+              <!--  Review Form -->
+              <h4>Submit a Review</h4>
+              <fieldset class="form-group" >
+                <select required ng-model="reviewCtrl.review.stars" class="form-control" ng-options="stars for stars in [5,4,3,2,1]"  title="Stars">
+                  <option value="">Rate the Product</option>
+                </select>
+              </fieldset>
+              <fieldset class="form-group" >
+                <textarea ng-model="reviewCtrl.review.body" class="form-control" placeholder="Write a short review of the product..." title="Review"></textarea>
+              </fieldset>
+              <fieldset class="form-group" >
+                <input required ng-model="reviewCtrl.review.author" type="email" class="form-control" placeholder="jimmyDean@example.org" title="Email" />
+              </fieldset>
+
+              <fieldset class="form-group">
+                <input type="submit" class="btn btn-primary pull-right" value="Submit Review" />
+              </fieldset>
+            </form>
+            </section>
+
+          </div>
+
+
+
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
